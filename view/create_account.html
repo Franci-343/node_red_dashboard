@@ -156,7 +156,11 @@
             }
 
             console.log('Correo:', email, 'Contraseña:', password);
-            alert('Cuenta creada exitosamente');
+            alert('Cuenta creada exitosamente. Redirigiendo al login...');
+            // Redirigir al login después de crear cuenta
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
         });
     </script>
 

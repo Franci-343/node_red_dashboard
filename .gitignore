@@ -1,0 +1,28 @@
+# Node modules
+node_modules/
+npm-debug.log
+
+# Environment variables
+.env
+.env.local
+
+# API Keys (por si creas archivos de configuración local)
+config.local.js
+*.local.json
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Node-RED user data (si decides incluir node_red_data)
+.node-red/

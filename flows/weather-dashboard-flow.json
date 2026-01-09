@@ -1,0 +1,109 @@
+[
+  {
+    "id": "weather-tab-001",
+    "type": "tab",
+    "label": "Weather Dashboard /ws/weather",
+    "disabled": false,
+    "info": "Flow que obtiene datos del clima y los publica por WebSocket"
+  },
+  {
+    "id": "inject-weather-001",
+    "type": "inject",
+    "z": "weather-tab-001",
+    "name": "Actualizar cada 10min",
+    "props": [
+      {
+        "p": "payload"
+      }
+    ],
+    "repeat": "10",
+    "crontab": "",
+    "once": true,
+    "onceDelay": "2",
+    "topic": "",
+    "payload": "",
+    "payloadType": "date",
+    "x": 140,
+    "y": 100,
+    "wires": [
+      [
+        "http-weather-001"
+      ]
+    ]
+  },
+  {
+    "id": "http-weather-001",
+    "type": "http request",
+    "z": "weather-tab-001",
+    "name": "OpenWeatherMap API",
+    "method": "GET",
+    "ret": "obj",
+    "paytoqs": "ignore",
+    "url": "https://api.openweathermap.org/data/2.5/weather?q=La Paz,BO&appid=TU_API_KEY&units=metric&lang=es",
+    "tls": "",
+    "persist": false,
+    "proxy": "",
+    "insecureHTTPParser": false,
+    "authType": "",
+    "sendsession": false,
+    "x": 360,
+    "y": 100,
+    "wires": [
+      [
+        "function-format-001"
+      ]
+    ]
+  },
+  {
+    "id": "function-format-001",
+    "type": "function",
+    "z": "weather-tab-001",
+    "name": "Formatear datos",
+    "func": "// Extrae y formatea los datos del clima\nconst weather = msg.payload;\n\nconst data = {\n    ciudad: weather.name || 'Desconocida',\n    temperatura: Math.round(weather.main?.temp || 0),\n    sensacion: Math.round(weather.main?.feels_like || 0),\n    tempMin: Math.round(weather.main?.temp_min || 0),\n    tempMax: Math.round(weather.main?.temp_max || 0),\n    humedad: weather.main?.humidity || 0,\n    presion: weather.main?.pressure || 0,\n    velocidadViento: Math.round((weather.wind?.speed || 0) * 3.6), // m/s a km/h\n    descripcion: weather.weather?.[0]?.description || 'Sin datos',\n    icono: weather.weather?.[0]?.icon || '01d',\n    nubosidad: weather.clouds?.all || 0,\n    visibilidad: Math.round((weather.visibility || 0) / 1000), // metros a km\n    timestamp: Date.now()\n};\n\nmsg.payload = JSON.stringify(data);\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "initialize": "",
+    "finalize": "",
+    "libs": [],
+    "x": 590,
+    "y": 100,
+    "wires": [
+      [
+        "ws-out-weather-001",
+        "debug-weather-001"
+      ]
+    ]
+  },
+  {
+    "id": "ws-out-weather-001",
+    "type": "websocket out",
+    "z": "weather-tab-001",
+    "name": "WS /ws/weather",
+    "server": "ws-server-weather-001",
+    "client": "",
+    "x": 810,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "debug-weather-001",
+    "type": "debug",
+    "z": "weather-tab-001",
+    "name": "Debug clima",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "payload",
+    "targetType": "msg",
+    "x": 810,
+    "y": 140,
+    "wires": []
+  },
+  {
+    "id": "ws-server-weather-001",
+    "type": "websocket-listener",
+    "path": "/ws/weather",
+    "wholemsg": "false"
+  }
+]

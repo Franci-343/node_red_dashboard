@@ -153,10 +153,25 @@
             event.preventDefault();
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            console.log('Correo:', email, 'Contraseña:', password);
-            // Aquí puedes validar/llamar al backend. Si es correcto, redirigir al dashboard.
-            // `login.html` está en `view/`, por eso se usa ../index.html
-            window.location.href = '../index.html';
+            
+            // Credenciales predeterminadas
+            const DEFAULT_EMAIL = 'admin@weather.com';
+            const DEFAULT_PASSWORD = 'admin123';
+            
+            console.log('Intento de login:', email);
+            
+            // Validar credenciales
+            if (email === DEFAULT_EMAIL && password === DEFAULT_PASSWORD) {
+                // Login exitoso - guardar sesión
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                console.log('Login exitoso');
+                // Redirigir al dashboard
+                window.location.href = '../index.html';
+            } else {
+                // Login fallido
+                alert('Correo o contraseña incorrectos.\n\nCredenciales de prueba:\nEmail: admin@weather.com\nPassword: admin123');
+            }
         });
 
         document.getElementById('createAccount').setAttribute('href', 'create_account.html');

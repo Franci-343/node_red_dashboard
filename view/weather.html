@@ -9,29 +9,28 @@
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
         body[data-theme="dark"] {
-            background: #0f1724;
-            color: #e6eef8;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
         }
         .weather-container {
             max-width: 1200px;
             margin: 0 auto;
         }
         .card {
-            background: #ffffff;
+            background: rgba(255, 255, 255, 0.95);
             border: none;
             border-radius: 20px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
             margin-bottom: 20px;
         }
         body[data-theme="dark"] .card {
-            background: #0b1220;
+            background: rgba(30, 30, 30, 0.95);
             color: #e6eef8;
-            border-color: rgba(255,255,255,0.04);
         }
         .main-weather {
             text-align: center;
@@ -39,11 +38,11 @@
         }
         .temperature {
             font-size: 5rem;
-            font-wei2d78ff;
+            font-weight: 700;
+            color: #667eea;
             margin: 20px 0;
         }
         body[data-theme="dark"] .temperature {
-            color: #78c8"dark"] .temperature {
             color: #9fd3ff;
         }
         .weather-icon {
@@ -68,10 +67,10 @@
         .detail-icon {
             font-size: 2rem;
             margin-right: 15px;
-            color: #2d78ff;
+            color: #667eea;
         }
         body[data-theme="dark"] .detail-icon {
-            color: #78c8ff;
+            color: #9fd3ff;
         }
         .detail-value {
             font-size: 1.5rem;
@@ -94,69 +93,25 @@
         }
         .status-connected { background: #10b981; }
         .status-disconnected { background: #ef4444; }
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .user-info {
-            background: #ffffff;
-            padding: 10px 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        }
-        body[data-theme="dark"] .user-info {
-            background: #0b1220;
-            color: #e6eef8;
-            border-color: rgba(255,255,255,0.04);
-        }
-        .logout-btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-left: 15px;
-            transition: background 0.3s;
-        }
-        .logout-btn:hover {
-            background: #dc2626;
-        }
-        .theme-toggle {#ffffff;
-            padding: 10px 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-        }
-        body[data-theme="dark"] .theme-toggle {
-            background: #0b1220;
-            color: #e6eef8;
-            border-color: rgba(255,255,255,0.04e {
-            background: rgba(30, 30, 30, 0.9);
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
-    <div class="weather-container">
-        <div class="top-bar">
-            <div class="user-info">
-                <i class="bi bi-person-circle"></i>
-                <span id="userEmail">--</span>
-                <button class="logout-btn" onclick="logout()">
-                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                </button>
-            </div>
-            <div class="theme-toggle">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="themeToggle">
-                    <label class="form-check-label" for="themeToggle">
-                        <i class="bi bi-moon-fill"></i> Modo Oscuro
-                    </label>
-                </div>
-            </div>
+    <div class="theme-toggle">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="themeToggle">
+            <label class="form-check-label text-white" for="themeToggle">
+                <i class="bi bi-moon-fill"></i>
+            </label>
         </div>
+    </div>
 
+    <div class="weather-container">
         <div class="card main-weather">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h2 class="mb-0">
@@ -240,28 +195,6 @@
     </div>
 
     <script>
-        // Check if user is logged in
-        (function(){
-            const isLoggedIn = localStorage.getItem('isLoggedIn');
-            if (isLoggedIn !== 'true') {
-                // Redirect to login
-                window.location.href = 'view/login.html';
-                return;
-            }
-            // Display user email
-            const userEmail = localStorage.getItem('userEmail');
-            document.getElementById('userEmail').textContent = userEmail || 'Usuario';
-        })();
-
-        // Logout function
-        function logout() {
-            if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                localStorage.removeItem('isLoggedIn');
-                localStorage.removeItem('userEmail');
-                window.location.href = 'view/login.html';
-            }
-        }
-
         // Theme handling
         (function(){
             const body = document.body;
@@ -294,13 +227,9 @@
         const statusIndicator = document.getElementById('statusIndicator');
         const statusText = document.getElementById('statusText');
 
-        console.log('🚀 Inicializando dashboard del clima...');
-        console.log('📡 URL WebSocket:', WS_URL);
-
         function updateStatus(connected) {
             statusIndicator.className = 'status-indicator ' + (connected ? 'status-connected' : 'status-disconnected');
             statusText.textContent = connected ? 'Conectado' : 'Desconectado';
-            console.log('📊 Estado conexión:', connected ? '✅ CONECTADO' : '❌ DESCONECTADO');
         }
 
         function formatTime(timestamp) {
@@ -309,8 +238,6 @@
         }
 
         function updateWeatherDisplay(data) {
-            console.log('🌤️ Actualizando display con datos:', data);
-            
             document.getElementById('ciudad').textContent = data.ciudad;
             document.getElementById('temperatura').textContent = data.temperatura + '°';
             document.getElementById('sensacion').textContent = data.sensacion;
@@ -327,50 +254,38 @@
             // Weather icon from OpenWeatherMap
             const iconUrl = `https://openweathermap.org/img/wn/${data.icono}@4x.png`;
             document.getElementById('weatherIcon').src = iconUrl;
-            
-            console.log('✅ Display actualizado correctamente');
         }
 
         function connect() {
-            console.log('🔌 Intentando conectar WebSocket a:', WS_URL);
-            
             socket = new WebSocket(WS_URL);
 
             socket.onopen = () => {
-                console.log('✅ WebSocket conectado exitosamente a Node-RED');
+                console.log('Conectado a Node-RED');
                 updateStatus(true);
             };
 
             socket.onmessage = (ev) => {
-                console.log('📨 Mensaje recibido del servidor:', ev.data);
-                
                 try {
                     const data = JSON.parse(ev.data);
-                    console.log('📦 Datos del clima parseados:', data);
+                    console.log('Datos recibidos:', data);
                     updateWeatherDisplay(data);
                 } catch (err) {
-                    console.error('❌ Error al parsear mensaje:', err);
-                    console.error('Datos recibidos:', ev.data);
+                    console.error('Error parseando mensaje:', err);
                 }
             };
 
             socket.onclose = () => {
-                console.warn('⚠️ Conexión WebSocket cerrada. Reintentando en 5 segundos...');
+                console.log('Conexión cerrada. Reintentando en 5s...');
                 updateStatus(false);
                 setTimeout(connect, 5000);
             };
 
             socket.onerror = (e) => {
-                console.error('❌ Error en WebSocket:', e);
-                console.error('Detalles:', {
-                    url: WS_URL,
-                    readyState: socket.readyState
-                });
+                console.error('WebSocket error:', e);
                 updateStatus(false);
             };
         }
 
-        console.log('🎬 Iniciando conexión WebSocket...');
         connect();
     </script>
 
